@@ -194,7 +194,8 @@ def generate_txt_report():
     output.write("====================================================================================================\n")
     output.write(f"                     RELATÓRIO DE DESPESAS - New Agro Business \n")
     # Add filter info to header
-    output.write(f"Filtros Aplicados: { {k: v for k, v in request.args.items() if k != \'page\'} }\n") 
+    applied_filters = {k: v for k, v in request.args.items() if k != 'page'}
+    output.write(f"Filtros Aplicados: {applied_filters}\n")
     output.write("====================================================================================================\n")
     output.write("{:<5} {:<12} {:<15} {:<15} {:<12} {:<15} {:<10} {:<10} {:<10} {:<15}\n".format(
         "ID", "Data", "Vendedor", "Tipo", "Valor (R$)", "Cidade/UF", "KM Ini", "KM Fim", "KM Total", "Anexo"
