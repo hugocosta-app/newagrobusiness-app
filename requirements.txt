@@ -4,3 +4,4 @@ Flask-SQLAlchemy
 Werkzeug
 Pillow
 python-dotenv
+gunicorn
