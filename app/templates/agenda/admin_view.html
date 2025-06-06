@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="agenda-admin-view-container">
+    <h2>{{ title }}</h2>
+
+    {# Date selection form #}
+    <form method="GET" action="{{ url_for(\'agenda.view_agenda\') }}" class="mb-4 form-inline">
+        <div class="form-group mr-2">
+            <label for="selected_date" class="mr-2">Visualizar Dia:</label>
+            <input type="date" id="selected_date" name="selected_date" class="form-control" 
+                   value="{{ selected_date.strftime(\'%Y-%m-%d\') }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ver Agenda</button>
+    </form>
+
+    <h4>Agenda para {{ selected_date.strftime(\"%d/%m/%Y\") }}</h4>
+
+    {% if entries %}
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Vendedor</th>
+                    <th>Localização</th>
+                    <th>Descrição</th>
+                    <th>Registrado em</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.seller.username }}</td>
+                    <td>{{ entry.location }}</td>
+                    <td>{{ entry.description if entry.description else \'-\' }}</td>
+                    <td>{{ entry.created_at.strftime(\'%d/%m/%Y %H:%M\') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum compromisso registrado para esta data.</p>
+    {% endif %}
+
+</div>
+{% endblock %}
+

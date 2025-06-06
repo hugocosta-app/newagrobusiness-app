@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Bem-vindo(a) ao Dashboard, {{ current_user.username }}!</h1>
+    <p>Este é o seu painel de controle central.</p>
+
+    {# Navigation or quick links based on role can be added here #}
+    {% if current_user.is_admin %}
+        <p>Você está logado como Administrador.</p>
+        {# Admin specific links #}
+        <ul>
+            <li><a href="#">Gerenciar Produtos</a></li> {# Placeholder #}
+            <li><a href="#">Ver Relatórios Gerais</a></li> {# Placeholder #}
+        </ul>
+    {% else %}
+        <p>Você está logado como Vendedor.</p>
+        {# Seller specific links #}
+        <ul>
+            <li><a href="#">Novo Pedido</a></li> {# Placeholder #}
+            <li><a href="#">Registrar Despesa</a></li> {# Placeholder #}
+            <li><a href="#">Registrar Visita</a></li> {# Placeholder #}
+            <li><a href="#">Minha Agenda</a></li> {# Placeholder #}
+        </ul>
+    {% endif %}
+
+    {# Further dashboard content will go here #}
+
+</div>
+{% endblock %}
+

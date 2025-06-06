@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="product-form-container">
+    <h2>{{ title }}</h2>
+    <form method="POST" action="">
+        <div class="form-group">
+            <label for="name">Nome do Produto:</label>
+            <input type="text" id="name" name="name" value="{{ product.name if product else \'\' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Descrição:</label>
+            <textarea id="description" name="description">{{ product.description if product else \'\' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="price">Preço (R$):</label>
+            <input type="text" id="price" name="price" value="{{ 
+                (\"{:.2f}\".format(product.price)).replace(\".\", \",\") if product else \'\' 
+            }}" required pattern="[0-9]+([,\\.][0-9]{1,2})?" title="Use vírgula como separador decimal, ex: 10,50">
+        </div>
+        <button type="submit" class="btn btn-primary">{{ \'Atualizar Produto\' if product else \'Adicionar Produto\' }}</button>
+        <a href="{{ url_for(\'products.list_products\') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+

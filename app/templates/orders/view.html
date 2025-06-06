@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="order-view-container">
+    <h2>{{ title }}</h2>
+    <a href="{{ url_for(\'orders.generate_txt_report\', order_id=order.id) }}" class="btn btn-secondary mb-3" target="_blank">Baixar Relatório TXT</a>
+    <a href="{{ url_for(\'orders.list_orders\') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
+
+    <div class="order-details card mb-4">
+        <div class="card-header">Detalhes do Pedido</div>
+        <div class="card-body">
+            <p><strong>ID do Pedido:</strong> {{ order.id }}</p>
+            <p><strong>Data:</strong> {{ order.order_date.strftime(\'%d/%m/%Y %H:%M:%S\') }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Vendedor:</strong> {{ order.seller.username }}</p>
+        </div>
+    </div>
+
+    <div class="customer-details card mb-4">
+        <div class="card-header">Dados do Cliente</div>
+        <div class="card-body">
+            <p><strong>Nome:</strong> {{ order.customer_name }}</p>
+            <p><strong>CNPJ:</strong> {{ order.customer_cnpj }}</p>
+            <p><strong>Endereço de Entrega:</strong></p>
+            <pre>{{ order.delivery_address }}</pre>
+        </div>
+    </div>
+
+    <div class="order-items-details card">
+        <div class="card-header">Itens do Pedido</div>
+        <div class="card-body">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>ID Produto</th>
+                        <th>Produto</th>
+                        <th>Qtd</th>
+                        <th>Preço Unit. (R$)</th>
+                        <th>Desc. (%)</th>
+                        <th>Subtotal (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product_id }}</td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ "{:.2f}".format(item.price_at_order).replace(\".\", \",\") }}</td>
+                        <td>{{ "{:.1f}".format(item.discount_applied).replace(\".\", \",\") }}</td>
+                        {% set subtotal = item.quantity * item.price_at_order %}
+                        {% set discount_amount = subtotal * (item.discount_applied / 100.0) %}
+                        {% set final_subtotal = subtotal - discount_amount %}
+                        <td>{{ "{:.2f}".format(final_subtotal).replace(\".\", \",\") }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align: right;"><strong>Valor Total do Pedido:</strong></td>
+                        <td><strong>R$ {{ "{:.2f}".format(order.total_amount).replace(\".\", \",\") }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="visit-view-container">
+    <h2>{{ title }}</h2>
+    <a href="{{ url_for(\'visits.list_visits\') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
+    {# Add Edit/Delete buttons here if functionality is added #}
+
+    <div class="visit-details card mb-4">
+        <div class="card-header">Detalhes da Visita</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID da Visita:</strong> {{ visit.id }}</p>
+                    <p><strong>Data:</strong> {{ visit.visit_date.strftime(\'%d/%m/%Y\') }}</p>
+                    <p><strong>Cliente:</strong> {{ visit.customer_name }}</p>
+                    <p><strong>Vendedor:</strong> {{ visit.seller.username }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Cidade/UF:</strong> {{ visit.city }}/{{ visit.state }}</p>
+                    <p><strong>Produtos Discutidos:</strong> {{ visit.products_discussed if visit.products_discussed else \'N/A\' }}</p>
+                    <p><strong>Registrado em:</strong> {{ visit.created_at.strftime(\'%d/%m/%Y %H:%M:%S\') }}</p>
+                </div>
+            </div>
+            <hr>
+            <p><strong>Resumo da Visita:</strong></p>
+            <pre>{{ visit.summary }}</pre>
+            {% if visit.highlights %}
+            <hr>
+            <p><strong>Destaques:</strong></p>
+            <pre>{{ visit.highlights }}</pre>
+            {% endif %}
+            {% if visit.observations %}
+            <hr>
+            <p><strong>Observações:</strong></p>
+            <pre>{{ visit.observations }}</pre>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if visit.photos.count() > 0 %}
+    <div class="visit-photos-details card">
+        <div class="card-header">Fotos da Visita</div>
+        <div class="card-body">
+            <div class="row">
+                {% for photo in visit.photos %}
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for(\'visits.uploaded_visit_photo\', filename=photo.filename) }}" target="_blank">
+                        <img src="{{ url_for(\'visits.uploaded_visit_photo\', filename=photo.filename) }}" alt="Foto da Visita {{ visit.id }}" class="img-thumbnail">
+                    </a>
+                    <small class="text-muted">{{ photo.filename }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+

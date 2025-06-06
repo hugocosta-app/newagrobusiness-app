@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="expense-list-container">
+    <h2>{{ title }}</h2>
+
+    <a href="{{ url_for(\'expenses.add_expense\') }}" class="btn btn-primary mb-3">Registrar Nova Despesa</a>
+
+    {# Add filter form here - More complex filtering can be added #}
+    {# Example basic filter form #}
+    {#
+    <form method="GET" action="{{ url_for(\'expenses.list_expenses\') }}" class="mb-4 filter-form">
+        <div class="form-row align-items-end">
+            <div class="form-group col-md-3">
+                <label for="date_from">De:</label>
+                <input type="date" id="date_from" name="date_from" class="form-control" value="{{ request.args.get(\'date_from\', \'\') }}">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="date_to">Até:</label>
+                <input type="date" id="date_to" name="date_to" class="form-control" value="{{ request.args.get(\'date_to\', \'\') }}">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="expense_type">Tipo:</label>
+                <select id="expense_type" name="expense_type" class="form-control">
+                    <option value="">Todos</option>
+                    {% for type in expense_types %}
+                        <option value="{{ type }}" {{ \"selected\" if request.args.get(\'expense_type\') == type else \"\" }}>{{ type.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if current_user.is_admin %}
+            <div class="form-group col-md-3">
+                <label for="seller_id">Vendedor:</label>
+                <select id="seller_id" name="seller_id" class="form-control">
+                    <option value="">Todos</option>
+                    {% for seller in sellers %}
+                        <option value="{{ seller.id }}" {{ \"selected\" if request.args.get(\'seller_id\')|int == seller.id else \"\" }}>{{ seller.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div class="form-group col-md-1">
+                <button type="submit" class="btn btn-info">Filtrar</button>
+            </div>
+        </div>
+    </form>
+    #}
+
+    {% if expenses.items %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor (R$)</th>
+                <th>Cidade/UF</th>
+                <th>KM Total</th>
+                {% if current_user.is_admin %}
+                    <th>Vendedor</th>
+                {% endif %}
+                <th>Nota Fiscal</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses.items %}
+            <tr>
+                <td>{{ expense.id }}</td>
+                <td>{{ expense.date.strftime(\'%d/%m/%Y\') }}</td>
+                <td>{{ expense.expense_type.capitalize() }}</td>
+                <td>{{ "{:.2f}".format(expense.amount).replace(\".\", \",\") }}</td>
+                <td>{{ expense.city }}/{{ expense.state }}</td>
+                <td>{{ "{:.2f}".format(expense.km_total).replace(\".\", \",\") if expense.km_total is not none else \'N/A\' }}</td>
+                {% if current_user.is_admin %}
+                    <td>{{ expense.seller.username }}</td>
+                {% endif %}
+                <td>
+                    {% if expense.receipt_filename %}
+                        <a href="{{ url_for(\'expenses.uploaded_file\', filename=expense.receipt_filename) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Ver Anexo</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for(\'expenses.view_expense\', expense_id=expense.id) }}" class="btn btn-sm btn-info">Ver Detalhes</a>
+                    {# Add edit/delete buttons later if needed #}
+                    {# <a href="{{ url_for(\'expenses.edit_expense\', expense_id=expense.id) }}" class="btn btn-sm btn-warning">Editar</a> #}
+                    {# <form action="{{ url_for(\'expenses.delete_expense\', expense_id=expense.id) }}" method="POST" style="display:inline;" onsubmit="return confirm(\'Tem certeza que deseja excluir esta despesa?\");">
+                        <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                    </form> #}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {# Pagination Links (similar to orders list) #}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if expenses.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for(\'expenses.list_expenses\', page=expenses.prev_num, **request.args) }}">Anterior</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+            {% endif %}
+
+            {% for page_num in expenses.iter_pages() %}
+                {% if page_num %}
+                    {% if expenses.page == page_num %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for(\'expenses.list_expenses\', page=page_num, **request.args) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if expenses.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for(\'expenses.list_expenses\', page=expenses.next_num, **request.args) }}">Próxima</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <p>Nenhuma despesa registrada encontrada.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

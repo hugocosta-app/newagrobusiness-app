@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="expense-form-container">
+    <h2>{{ title }}</h2>
+    {# Use enctype="multipart/form-data" for file uploads #}
+    <form method="POST" action="" enctype="multipart/form-data">
+        
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="date">Data da Despesa:</label>
+                <input type="date" id="date" name="date" class="form-control" required 
+                       value="{{ expense.date.strftime(\"%Y-%m-%d\") if expense else \"\" }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="expense_type">Tipo de Despesa:</label>
+                <select id="expense_type" name="expense_type" class="form-control" required>
+                    <option value="" disabled {{ \"selected\" if not expense else \"\" }}>Selecione...</option>
+                    {% for type in expense_types %}
+                        <option value="{{ type }}" {{ \"selected\" if expense and expense.expense_type == type else \"\" }}>{{ type.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+             <div class="form-group col-md-6">
+                <label for="amount">Valor (R$):</label>
+                <input type="text" id="amount" name="amount" class="form-control" required 
+                       pattern="[0-9]+([,\\.][0-9]{1,2})?" title="Use vírgula como separador decimal, ex: 50,25" 
+                       value="{{ (\"{:.2f}\".format(expense.amount)).replace(\".\", \",\") if expense else \"\" }}">
+            </div>
+             <div class="form-group col-md-6">
+                <label for="receipt">Nota Fiscal (Opcional):</label>
+                <input type="file" id="receipt" name="receipt" class="form-control-file">
+                {% if expense and expense.receipt_filename %}
+                    <small>Arquivo atual: <a href="{{ url_for(\'expenses.uploaded_file\', filename=expense.receipt_filename) }}" target="_blank">{{ expense.receipt_filename }}</a></small>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="city">Cidade:</label>
+                <input type="text" id="city" name="city" class="form-control" required value="{{ expense.city if expense else \"\" }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="state">Estado (UF):</label>
+                <input type="text" id="state" name="state" class="form-control" required maxlength="2" pattern="[A-Za-z]{2}" title="Sigla do estado, ex: SP" value="{{ expense.state if expense else \"\" }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="km_initial">KM Inicial (Opcional):</label>
+                <input type="text" id="km_initial" name="km_initial" class="form-control" 
+                       pattern="[0-9]+([,\\.][0-9]{1,2})?" title="Use vírgula como separador decimal" 
+                       value="{{ (\"{:.2f}\".format(expense.km_initial)).replace(\".\", \",\") if expense and expense.km_initial is not none else \"\" }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="km_final">KM Final (Opcional):</label>
+                <input type="text" id="km_final" name="km_final" class="form-control" 
+                       pattern="[0-9]+([,\\.][0-9]{1,2})?" title="Use vírgula como separador decimal" 
+                       value="{{ (\"{:.2f}\".format(expense.km_final)).replace(\".\", \",\") if expense and expense.km_final is not none else \"\" }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Descrição (Opcional):</label>
+            <textarea id="description" name="description" class="form-control" rows="3">{{ expense.description if expense else \"\" }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{ \"Atualizar Despesa\" if expense else \"Registrar Despesa\" }}</button>
+        <a href="{{ url_for(\'expenses.list_expenses\') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+
