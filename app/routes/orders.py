@@ -143,7 +143,7 @@ def generate_txt_report(order_id):
     output.write(f"         PEDIDO #{order.id} - New Agro Business \n")
     output.write("========================================\n")
     formatted_date = order.order_date.strftime('%d/%m/%Y %H:%M:%S')
-output.write(f"Data do Pedido: {formatted_date}\n")
+    output.write(f"Data do Pedido: {formatted_date}\n")
 
     output.write(f"Vendedor: {order.seller.username}\n")
     output.write("----------------------------------------\n")
