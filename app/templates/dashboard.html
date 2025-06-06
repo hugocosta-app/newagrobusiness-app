@@ -4,30 +4,34 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <h1>Bem-vindo(a) ao Dashboard, {{ current_user.username }}!</h1>
-    <p>Este é o seu painel de controle central.</p>
+    <h2>Bem-vindo(a) ao Dashboard, {{ current_user.username }}!</h2>
 
-    {# Navigation or quick links based on role can be added here #}
     {% if current_user.is_admin %}
+        <p>Este é o seu painel de controle central.</p>
         <p>Você está logado como Administrador.</p>
-        {# Admin specific links #}
+        <h4>Ações Rápidas:</h4>
         <ul>
-            <li><a href="#">Gerenciar Produtos</a></li> {# Placeholder #}
-            <li><a href="#">Ver Relatórios Gerais</a></li> {# Placeholder #}
+            <li><a href="{{ url_for(\'products.list_products\') }}">Gerenciar Produtos</a></li>
+            <li><a href="{{ url_for(\'orders.list_orders\') }}">Ver Todos os Pedidos</a></li>
+            <li><a href="{{ url_for(\'expenses.list_expenses\') }}">Ver Todas as Despesas</a></li>
+            <li><a href="{{ url_for(\'visits.list_visits\') }}">Ver Todos os Relatórios de Visita</a></li>
+            <li><a href="{{ url_for(\'agenda.view_agenda\') }}">Ver Agenda da Equipe</a></li>
+            {# Adicionar link para gerenciar usuários (vendedores) se/quando implementado #}
         </ul>
     {% else %}
+        <p>Este é o seu painel para gestão de vendas e atividades.</p>
         <p>Você está logado como Vendedor.</p>
-        {# Seller specific links #}
+         <h4>Ações Rápidas:</h4>
         <ul>
-            <li><a href="#">Novo Pedido</a></li> {# Placeholder #}
-            <li><a href="#">Registrar Despesa</a></li> {# Placeholder #}
-            <li><a href="#">Registrar Visita</a></li> {# Placeholder #}
-            <li><a href="#">Minha Agenda</a></li> {# Placeholder #}
+            <li><a href="{{ url_for(\'orders.create_order\') }}">Novo Pedido</a></li>
+            <li><a href="{{ url_for(\'expenses.add_expense\') }}">Registrar Despesa</a></li>
+            <li><a href="{{ url_for(\'visits.add_visit\') }}">Registrar Visita</a></li>
+            <li><a href="{{ url_for(\'agenda.view_agenda\') }}">Minha Agenda Semanal</a></li>
+            <li><a href="{{ url_for(\'orders.list_orders\') }}">Meus Pedidos</a></li>
+            <li><a href="{{ url_for(\'expenses.list_expenses\') }}">Minhas Despesas</a></li>
+             <li><a href="{{ url_for(\'visits.list_visits\') }}">Meus Relatórios de Visita</a></li>
         </ul>
     {% endif %}
 
-    {# Further dashboard content will go here #}
-
 </div>
 {% endblock %}
-
