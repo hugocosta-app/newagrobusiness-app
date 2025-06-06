@@ -5,8 +5,8 @@
 {% block content %}
 <div class="order-view-container">
     <h2>{{ title }}</h2>
-    <a href="{{ url_for(\'orders.generate_txt_report\', order_id=order.id) }}" class="btn btn-secondary mb-3" target="_blank">Baixar Relatório TXT</a>
-    <a href="{{ url_for(\'orders.list_orders\') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
+    <a href="{{ url_for('orders.generate_txt_report', order_id=order.id) }}" class="btn btn-secondary mb-3" target="_blank">Baixar Relatório TXT</a>
+    <a href="{{ url_for('orders.list_orders') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
 
     <div class="order-details card mb-4">
         <div class="card-header">Detalhes do Pedido</div>

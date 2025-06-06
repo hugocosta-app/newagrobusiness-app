@@ -23,7 +23,7 @@
         </div>
         
         <button type="submit" class="btn btn-primary">{{ \"Atualizar Compromisso\" if entry else \"Adicionar Compromisso\" }}</button>
-        <a href="{{ url_for(\'agenda.view_agenda\', date=(entry.entry_date.strftime(\"%Y-%m-%d\") if entry else prefill_date)) }}" class="btn btn-secondary">Cancelar</a>
+        <a href="{{ url_for('agenda.view_agenda', date=(entry.entry_date.strftime(\"%Y-%m-%d\") if entry else prefill_date)) }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="visit-view-container">
     <h2>{{ title }}</h2>
-    <a href="{{ url_for(\'visits.list_visits\') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
+    <a href="{{ url_for('visits.list_visits') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
     {# Add Edit/Delete buttons here if functionality is added #}
 
     <div class="visit-details card mb-4">
@@ -47,8 +47,8 @@
             <div class="row">
                 {% for photo in visit.photos %}
                 <div class="col-md-4 mb-3">
-                    <a href="{{ url_for(\'visits.uploaded_visit_photo\', filename=photo.filename) }}" target="_blank">
-                        <img src="{{ url_for(\'visits.uploaded_visit_photo\', filename=photo.filename) }}" alt="Foto da Visita {{ visit.id }}" class="img-thumbnail">
+                    <a href="{{ url_for('visits.uploaded_visit_photo', filename=photo.filename) }}" target="_blank">
+                        <img src="{{ url_for('visits.uploaded_visit_photo', filename=photo.filename) }}" alt="Foto da Visita {{ visit.id }}" class="img-thumbnail">
                     </a>
                     <small class="text-muted">{{ photo.filename }}</small>
                 </div>

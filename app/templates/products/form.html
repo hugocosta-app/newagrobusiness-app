@@ -21,7 +21,7 @@
             }}" required pattern="[0-9]+([,\\.][0-9]{1,2})?" title="Use vírgula como separador decimal, ex: 10,50">
         </div>
         <button type="submit" class="btn btn-primary">{{ \'Atualizar Produto\' if product else \'Adicionar Produto\' }}</button>
-        <a href="{{ url_for(\'products.list_products\') }}" class="btn btn-secondary">Cancelar</a>
+        <a href="{{ url_for('products.list_products') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}

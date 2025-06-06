@@ -36,7 +36,7 @@
                 <label for="receipt">Nota Fiscal (Opcional):</label>
                 <input type="file" id="receipt" name="receipt" class="form-control-file">
                 {% if expense and expense.receipt_filename %}
-                    <small>Arquivo atual: <a href="{{ url_for(\'expenses.uploaded_file\', filename=expense.receipt_filename) }}" target="_blank">{{ expense.receipt_filename }}</a></small>
+                    <small>Arquivo atual: <a href="{{ url_for('expenses.uploaded_file', filename=expense.receipt_filename) }}" target="_blank">{{ expense.receipt_filename }}</a></small>
                 {% endif %}
             </div>
         </div>
@@ -73,7 +73,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">{{ \"Atualizar Despesa\" if expense else \"Registrar Despesa\" }}</button>
-        <a href="{{ url_for(\'expenses.list_expenses\') }}" class="btn btn-secondary">Cancelar</a>
+        <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="order-create-container">
     <h2>{{ title }}</h2>
-    <form method="POST" action="{{ url_for(\'orders.create_order\') }}" id="order-form">
+    <form method="POST" action="{{ url_for('orders.create_order') }}" id="order-form">
         
         <h4>Dados do Cliente</h4>
         <div class="form-group">
@@ -52,7 +52,7 @@
         </table>
 
         <button type="submit" class="btn btn-primary">Criar Pedido</button>
-        <a href="{{ url_for(\'orders.list_orders\') }}" class="btn btn-secondary">Cancelar</a>
+        <a href="{{ url_for('orders.list_orders') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 
@@ -99,7 +99,7 @@
                 return;
             }
             searchTimeout = setTimeout(() => {
-                fetch(`{{ url_for(\'orders.search_products\') }}?q=${encodeURIComponent(query)}`)
+                fetch(`{{ url_for('orders.search_products') }}?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         searchResults.innerHTML = \'\';

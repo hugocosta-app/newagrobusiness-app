@@ -5,7 +5,7 @@
 {% block content %}
 <div class="expense-view-container">
     <h2>{{ title }}</h2>
-    <a href="{{ url_for(\'expenses.list_expenses\') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
+    <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
     {# Add Edit/Delete buttons here if functionality is added #}
 
     <div class="expense-details card">
@@ -35,11 +35,11 @@
             {% if expense.receipt_filename %}
             <hr>
             <p><strong>Nota Fiscal Anexada:</strong></p>
-            <p><a href="{{ url_for(\'expenses.uploaded_file\', filename=expense.receipt_filename) }}" target="_blank">{{ expense.receipt_filename }}</a></p>
+            <p><a href="{{ url_for('expenses.uploaded_file', filename=expense.receipt_filename) }}" target="_blank">{{ expense.receipt_filename }}</a></p>
             {# Optionally display image preview if it\'s an image #}
             {% set ext = expense.receipt_filename.rsplit(\".\", 1)[1].lower() %}
             {% if ext in [\'png\', \'jpg\', \'jpeg\', \'gif\'] %}
-                <img src="{{ url_for(\'expenses.uploaded_file\', filename=expense.receipt_filename) }}" alt="Nota Fiscal" style="max-width: 100%; height: auto; margin-top: 10px;">
+                <img src="{{ url_for('expenses.uploaded_file', filename=expense.receipt_filename) }}" alt="Nota Fiscal" style="max-width: 100%; height: auto; margin-top: 10px;">
             {% endif %}
             {% endif %}
         </div>
