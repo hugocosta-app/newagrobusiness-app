@@ -1,72 +1,67 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+{% block title %}Detalhes do Pedido{% endblock %}
 
 {% block content %}
-<div class="order-view-container">
-    <h2>{{ title }}</h2>
-    <a href="{{ url_for('orders.generate_txt_report', order_id=order.id) }}" class="btn btn-secondary mb-3" target="_blank">Baixar Relatório TXT</a>
-    <a href="{{ url_for('orders.list_orders') }}" class="btn btn-outline-secondary mb-3">Voltar para Lista</a>
+<div class="order-details-container">
+    <h2>Detalhes do Pedido #{{ order.id }}</h2>
 
-    <div class="order-details card mb-4">
-        <div class="card-header">Detalhes do Pedido</div>
+    <div class="card mb-3">
+        <div class="card-header">
+            Informações do Cliente e Pedido
+        </div>
         <div class="card-body">
-            <p><strong>ID do Pedido:</strong> {{ order.id }}</p>
-            <p><strong>Data:</strong> {{ order.order_date.strftime(\'%d/%m/%Y %H:%M:%S\') }}</p>
-            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Cliente:</strong> {{ order.client_name }}</p>
+            <p><strong>CNPJ:</strong> {{ order.client_cnpj if order.client_cnpj else "N/A" }}</p>
+            <p><strong>Endereço de Entrega:</strong> {{ order.delivery_address }}</p>
+            <p><strong>Data do Pedido:</strong> {{ order.order_date.strftime('%d/%m/%Y %H:%M') }}</p>
             <p><strong>Vendedor:</strong> {{ order.seller.username }}</p>
         </div>
     </div>
 
-    <div class="customer-details card mb-4">
-        <div class="card-header">Dados do Cliente</div>
-        <div class="card-body">
-            <p><strong>Nome:</strong> {{ order.customer_name }}</p>
-            <p><strong>CNPJ:</strong> {{ order.customer_cnpj }}</p>
-            <p><strong>Endereço de Entrega:</strong></p>
-            <pre>{{ order.delivery_address }}</pre>
+    <div class="card mb-3">
+        <div class="card-header">
+            Itens do Pedido
         </div>
-    </div>
-
-    <div class="order-items-details card">
-        <div class="card-header">Itens do Pedido</div>
         <div class="card-body">
-            <table class="table table-sm">
+            {% if order.items %}
+            <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>ID Produto</th>
                         <th>Produto</th>
-                        <th>Qtd</th>
                         <th>Preço Unit. (R$)</th>
-                        <th>Desc. (%)</th>
+                        <th>Quantidade</th>
+                        <th>Desconto (%)</th>
                         <th>Subtotal (R$)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in order.items %}
                     <tr>
-                        <td>{{ item.product_id }}</td>
                         <td>{{ item.product.name }}</td>
+                        <td>{{ "%.2f"|format(item.unit_price) }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ "{:.2f}".format(item.price_at_order).replace(\".\", \",\") }}</td>
-                        <td>{{ "{:.1f}".format(item.discount_applied).replace(\".\", \",\") }}</td>
-                        {% set subtotal = item.quantity * item.price_at_order %}
-                        {% set discount_amount = subtotal * (item.discount_applied / 100.0) %}
-                        {% set final_subtotal = subtotal - discount_amount %}
-                        <td>{{ "{:.2f}".format(final_subtotal).replace(\".\", \",\") }}</td>
+                        <td>{{ "%.2f"|format(item.discount) }}</td>
+                        <td>{{ "%.2f"|format(item.subtotal) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="5" style="text-align: right;"><strong>Valor Total do Pedido:</strong></td>
-                        <td><strong>R$ {{ "{:.2f}".format(order.total_amount).replace(\".\", \",\") }}</strong></td>
+                        <td colspan="4" style="text-align: right;"><strong>Total do Pedido (R$):</strong></td>
+                        <td><strong>{{ "%.2f"|format(order.total_amount) }}</strong></td>
                     </tr>
                 </tfoot>
             </table>
+            {% else %}
+            <p>Nenhum item neste pedido.</p>
+            {% endif %}
         </div>
     </div>
 
+    <div class="mb-3">
+        <a href="{{ url_for('orders.list_orders') }}" class="btn btn-secondary">Voltar para Pedidos</a>
+        <a href="{{ url_for('orders.generate_txt_report', order_id=order.id) }}" class="btn btn-info">Gerar Relatório TXT</a>
+    </div>
 </div>
 {% endblock %}
-

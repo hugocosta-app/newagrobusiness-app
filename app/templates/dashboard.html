@@ -11,11 +11,11 @@
         <p>Você está logado como Administrador.</p>
         <h4>Ações Rápidas:</h4>
         <ul>
-            <li><a href="{{ url_for('products.list_products') }}">Gerenciar Produtos</a></li>
-            <li><a href="{{ url_for('orders.list_orders') }}">Ver Todos os Pedidos</a></li>
-            <li><a href="{{ url_for('expenses.list_expenses') }}">Ver Todas as Despesas</a></li>
-            <li><a href="{{ url_for('visits.list_visits') }}">Ver Todos os Relatórios de Visita</a></li>
-            <li><a href="{{ url_for('agenda.view_agenda') }}">Ver Agenda da Equipe</a></li>
+            <li><a href="{{ url_for(\'products.list_products\') }}">Gerenciar Produtos</a></li>
+            <li><a href="{{ url_for(\'orders.list_orders\') }}">Ver Todos os Pedidos</a></li>
+            <li><a href="{{ url_for(\'expenses.list_expenses\') }}">Ver Todas as Despesas</a></li>
+            <li><a href="{{ url_for(\'visits.list_visits\') }}">Ver Todos os Relatórios de Visita</a></li>
+            <li><a href="{{ url_for(\'agenda.view_agenda\') }}">Ver Agenda da Equipe</a></li>
             {# Adicionar link para gerenciar usuários (vendedores) se/quando implementado #}
         </ul>
     {% else %}
@@ -23,13 +23,13 @@
         <p>Você está logado como Vendedor.</p>
          <h4>Ações Rápidas:</h4>
         <ul>
-            <li><a href="{{ url_for('orders.create_order') }}">Novo Pedido</a></li>
-            <li><a href="{{ url_for('expenses.add_expense') }}">Registrar Despesa</a></li>
-            <li><a href="{{ url_for('visits.add_visit') }}">Registrar Visita</a></li>
-            <li><a href="{{ url_for('agenda.view_agenda') }}">Minha Agenda Semanal</a></li>
-            <li><a href="{{ url_for('orders.list_orders') }}">Meus Pedidos</a></li>
-            <li><a href="{{ url_for('expenses.list_expenses') }}">Minhas Despesas</a></li>
-             <li><a href="{{ url_for('visits.list_visits') }}">Meus Relatórios de Visita</a></li>
+            <li><a href="{{ url_for(\'orders.create_order\') }}">Novo Pedido</a></li>
+            <li><a href="{{ url_for(\'expenses.add_expense\') }}">Registrar Despesa</a></li>
+            <li><a href="{{ url_for(\'visits.add_visit\') }}">Registrar Visita</a></li>
+            <li><a href="{{ url_for(\'agenda.view_agenda\') }}">Minha Agenda Semanal</a></li>
+            <li><a href="{{ url_for(\'orders.list_orders\') }}">Meus Pedidos</a></li>
+            <li><a href="{{ url_for(\'expenses.list_expenses\') }}">Minhas Despesas</a></li>
+             <li><a href="{{ url_for(\'visits.list_visits\') }}">Meus Relatórios de Visita</a></li>
         </ul>
     {% endif %}
 

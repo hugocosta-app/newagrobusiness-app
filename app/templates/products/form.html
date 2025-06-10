@@ -1,28 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+{% block title %}Login - New Agrobusiness{% endblock %}
 
 {% block content %}
-<div class="product-form-container">
-    <h2>{{ title }}</h2>
-    <form method="POST" action="">
+<div class="auth-container">
+    <h2>Login</h2>
+    <form method="POST" action="{{ url_for(\'auth.login\') }}">
+        {# CSRF Token (se estiver usando Flask-WTF, adicione form.hidden_tag() aqui) #}
         <div class="form-group">
-            <label for="name">Nome do Produto:</label>
-            <input type="text" id="name" name="name" value="{{ product.name if product else \'\' }}" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
         </div>
         <div class="form-group">
-            <label for="description">Descrição:</label>
-            <textarea id="description" name="description">{{ product.description if product else \'\' }}</textarea>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
         </div>
-        <div class="form-group">
-            <label for="price">Preço (R$):</label>
-            <input type="text" id="price" name="price" value="{{ 
-                (\"{:.2f}\".format(product.price)).replace(\".\", \",\") if product else \'\' 
-            }}" required pattern="[0-9]+([,\\.][0-9]{1,2})?" title="Use vírgula como separador decimal, ex: 10,50">
+        <div class="form-group form-check">
+             <input type="checkbox" id="remember_me" name="remember_me" class="form-check-input">
+             <label for="remember_me" class="form-check-label">Lembrar-me</label>
         </div>
-        <button type="submit" class="btn btn-primary">{{ \'Atualizar Produto\' if product else \'Adicionar Produto\' }}</button>
-        <a href="{{ url_for('products.list_products') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Entrar</button>
     </form>
+    {# Adicionar links para "Esqueci minha senha" ou "Registrar" se necessário #}
 </div>
 {% endblock %}
-

@@ -4,52 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}New Agrobusiness{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Add any other CSS frameworks or libraries here if needed -->
+    <link rel="stylesheet" href="{{ url_for(\'static\', filename=\'css/style.css\') }}">
+    {# Favicon ou outros links podem ser adicionados aqui #}
 </head>
 <body>
     <header>
-        <nav class="navbar">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="{{ url_for('static', filename='images/logonewagrotransparente.png') }}" alt="New Agrobusiness Logo" height="50">
-                </a>
-                <!-- Navigation links will go here - possibly dynamic based on user role -->
-                <ul class="nav-links">
-                    {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-                        <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
+        <div class="logo">
+            <a href="{{ url_for(\'main.dashboard\
+
+
+
+') }}">
+                <img src="{{ url_for(\'static\', filename=\'images/logonewagrotransparente.png\') }}" alt="New Agrobusiness Logo">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for(\'main.dashboard\
+
+
+
+') }}">Dashboard</a></li>
+                    {% if current_user.is_admin %}
+                        <li><a href="{{ url_for(\'products.list_products\
+
+
+
+') }}">Produtos</a></li>
+                        <li><a href="{{ url_for(\'orders.list_orders\
+
+
+
+') }}">Pedidos</a></li>
+                        <li><a href="{{ url_for(\'expenses.list_expenses\
+
+
+
+') }}">Despesas</a></li>
+                        <li><a href="{{ url_for(\'visits.list_visits\
+
+
+
+') }}">Visitas</a></li>
+                        <li><a href="{{ url_for(\'agenda.view_agenda\
+
+
+
+') }}">Agenda</a></li>
+                        {# Link para gerenciar usuários (se aplicável) #}
                     {% else %}
-                        <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                        <li><a href="{{ url_for(\'orders.create_order\
+
+
+
+') }}">Novo Pedido</a></li>
+                        <li><a href="{{ url_for(\'expenses.add_expense\
+
+
+
+') }}">Nova Despesa</a></li>
+                        <li><a href="{{ url_for(\'visits.add_visit\
+
+
+
+') }}">Nova Visita</a></li>
+                        <li><a href="{{ url_for(\'agenda.view_agenda\
+
+
+
+') }}">Agenda</a></li>
                     {% endif %}
-                </ul>
-            </div>
+                     <li><a href="{{ url_for(\'auth.logout\
+
+
+
+') }}">Sair</a></li>
+                {% else %}
+                    <li><a href="{{ url_for(\'auth.login\
+
+
+
+') }}">Login</a></li>
+                {% endif %}
+            </ul>
         </nav>
     </header>
 
-    <main class="container content-area">
+    <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-messages">
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="flash-messages {{ category }}">{{ message }}</div>
                 {% endfor %}
-                </div>
             {% endif %}
         {% endwith %}
-        {% block content %}
-        <!-- Page specific content will be injected here -->
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; {{ now().year }} New Agrobusiness. Todos os direitos reservados.</p>
-        </div>
+        <p>&copy; {{ now().year }} New Agrobusiness. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Add any JavaScript files here if needed -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for(\'static\', filename=\'js/script.js\') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
-

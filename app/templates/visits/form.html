@@ -1,68 +1,57 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
 <div class="visit-form-container">
     <h2>{{ title }}</h2>
-    {# Use enctype="multipart/form-data" for file uploads #}
-    <form method="POST" action="" enctype="multipart/form-data">
-        
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="customer_name">Cliente Visitado:</label>
-                <input type="text" id="customer_name" name="customer_name" class="form-control" required 
-                       value="{{ visit.customer_name if visit else \"\" }}">
-            </div>
-            <div class="form-group col-md-6">
-                <label for="visit_date">Data da Visita:</label>
-                <input type="date" id="visit_date" name="visit_date" class="form-control" required 
-                       value="{{ visit.visit_date.strftime(\"%Y-%m-%d\") if visit else \"\" }}">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="city">Cidade:</label>
-                <input type="text" id="city" name="city" class="form-control" required value="{{ visit.city if visit else \"\" }}">
-            </div>
-            <div class="form-group col-md-6">
-                <label for="state">Estado (UF):</label>
-                <input type="text" id="state" name="state" class="form-control" required maxlength="2" pattern="[A-Za-z]{2}" title="Sigla do estado, ex: SP" value="{{ visit.state if visit else \"\" }}">
-            </div>
-        </div>
-
+    <form method="POST" action="{{ action_url }}" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="products_discussed">Produtos Discutidos (Opcional):</label>
-            <input type="text" id="products_discussed" name="products_discussed" class="form-control" 
-                   placeholder="Ex: Produto A, Produto B" value="{{ visit.products_discussed if visit else \"\" }}">
+            <label for="client_name">Nome do Cliente:</label>
+            <input type="text" id="client_name" name="client_name" class="form-control" value="{{ visit.client_name if visit else '' }}" required>
         </div>
-
+        <div class="form-group">
+            <label for="visit_date">Data da Visita:</label>
+            <input type="date" id="visit_date" name="visit_date" class="form-control" value="{{ visit.visit_date.strftime('%Y-%m-%d') if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="city">Cidade:</label>
+            <input type="text" id="city" name="city" class="form-control" value="{{ visit.city if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="state">Estado (UF):</label>
+            <input type="text" id="state" name="state" class="form-control" maxlength="2" value="{{ visit.state if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="products_discussed">Produtos Discutidos (separados por vírgula):</label>
+            <input type="text" id="products_discussed" name="products_discussed" class="form-control" value="{{ visit.products_discussed if visit else '' }}">
+        </div>
         <div class="form-group">
             <label for="summary">Resumo da Visita:</label>
-            <textarea id="summary" name="summary" class="form-control" rows="4" required>{{ visit.summary if visit else \"\" }}</textarea>
+            <textarea id="summary" name="summary" class="form-control" rows="3" required>{{ visit.summary if visit else '' }}</textarea>
         </div>
-
         <div class="form-group">
-            <label for="highlights">Destaques da Visita (Opcional):</label>
-            <textarea id="highlights" name="highlights" class="form-control" rows="3">{{ visit.highlights if visit else \"\" }}</textarea>
+            <label for="highlights">Destaques da Visita:</label>
+            <textarea id="highlights" name="highlights" class="form-control" rows="3">{{ visit.highlights if visit else '' }}</textarea>
         </div>
-
         <div class="form-group">
-            <label for="observations">Observações (Opcional):</label>
-            <textarea id="observations" name="observations" class="form-control" rows="3">{{ visit.observations if visit else \"\" }}</textarea>
+            <label for="observations">Observações:</label>
+            <textarea id="observations" name="observations" class="form-control" rows="3">{{ visit.observations if visit else '' }}</textarea>
         </div>
-
         <div class="form-group">
-            <label for="photos">Anexar Fotos (Opcional, máx. 5):</label>
-            <input type="file" id="photos" name="photos" class="form-control-file" multiple accept="image/*">
-            <small class="form-text text-muted">Formatos permitidos: {{ ALLOWED_PHOTO_EXTENSIONS|join(\", \") }}.</small>
-            {# Display existing photos if editing later #}
+            <label for="visit_photos">Fotos da Visita (múltiplas):</label>
+            <input type="file" id="visit_photos" name="visit_photos" class="form-control-file" accept="image/*" multiple>
+            {% if visit and visit.photos %}
+                <p>Fotos atuais:</p>
+                <div class="current-photos">
+                    {% for photo_url in visit.photos.split(',') %}
+                        <img src="{{ photo_url.strip() }}" alt="Foto da Visita" style="max-width: 100px; margin-right: 10px;">
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-
-        <button type="submit" class="btn btn-primary">{{ \"Atualizar Relatório\" if visit else \"Registrar Visita\" }}</button>
+        <button type="submit" class="btn btn-primary">Salvar Visita</button>
         <a href="{{ url_for('visits.list_visits') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}
-
