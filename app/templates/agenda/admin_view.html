@@ -19,7 +19,7 @@
             </div>
             <div class="col-md-4">
                 <label for="date">Filtrar por Data:</label>
-                <input type="date" name="date" id="date" class="form-control" value="{{ selected_date.strftime("%Y-%m-%d") if selected_date else "" }}">
+                <input type="date" name="date" id="date" class="form-control" value="{{ selected_date.strftime('%Y-%m-%d') if selected_date else '' }}">
             </div>
             <div class="col-md-4 align-self-end">
                 <button type="submit" class="btn btn-info">Filtrar</button>

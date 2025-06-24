@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 import os
+from datetime import datetime # Importar datetime aqui
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -49,16 +50,14 @@ def create_app(config_class=Config):
     app.register_blueprint(agenda_bp)
 
     # Add a context processor to make 'now' available in templates for the year in footer
-    from datetime import datetime
     @app.context_processor
     def inject_now():
         return {'now': datetime.utcnow}
     
-    # Add context processor for allowed photo extensions in visit form
-    from app.routes.visits import ALLOWED_PHOTO_EXTENSIONS
+    # Add context processor for allowed photo extensions (using config.py)
     @app.context_processor
     def inject_allowed_photo_extensions():
-        return dict(ALLOWED_PHOTO_EXTENSIONS=ALLOWED_PHOTO_EXTENSIONS)
+        return dict(ALLOWED_PHOTO_EXTENSIONS=app.config['ALLOWED_EXTENSIONS'])
 
     # Create database tables if they don't exist
     with app.app_context():
