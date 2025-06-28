@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Login - New Agrobusiness{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="auth-container">
+<div class="login-container">
     <h2>Login</h2>
-    <form method="POST" action="{{ url_for(\'auth.login\') }}">
-        {# CSRF Token (se estiver usando Flask-WTF, adicione form.hidden_tag() aqui) #}
+    <form method="POST" action="{{ url_for("auth.login") }}">
         <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" class="form-control" required>
@@ -15,12 +14,7 @@
             <label for="password">Senha:</label>
             <input type="password" id="password" name="password" class="form-control" required>
         </div>
-        <div class="form-group form-check">
-             <input type="checkbox" id="remember_me" name="remember_me" class="form-check-input">
-             <label for="remember_me" class="form-check-label">Lembrar-me</label>
-        </div>
         <button type="submit" class="btn btn-primary">Entrar</button>
     </form>
-    {# Adicionar links para "Esqueci minha senha" ou "Registrar" se necessário #}
 </div>
 {% endblock %}
