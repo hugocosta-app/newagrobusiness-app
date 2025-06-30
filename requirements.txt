@@ -4,5 +4,5 @@ Flask-SQLAlchemy
 Werkzeug
 Pillow
 python-dotenv
-
-openpyxl
+gunicorn
+openpyxl==3.1.5
