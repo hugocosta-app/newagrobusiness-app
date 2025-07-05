@@ -72,5 +72,9 @@ def create_app(config_class=Config):
             User.create_user('admin', 'admin@newagrobusiness.com.br', 'adminpassword', is_admin=True)
             print("Default admin user created (email: admin@newagrobusiness.com.br, password: adminpassword)")
 
-    return app
+    # ... (código existente)
 
+    from app import commands
+    app.cli.add_command(commands.cli)
+
+    return app
