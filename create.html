@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="order-create-container">
+    <h2>{{ title }}</h2>
+    <form method="POST" action="{{ url_for('orders.create_order') }}" id="order-form">
+        
+        <h4>Dados do Cliente</h4>
+        <div class="form-group">
+            <label for="customer_name">Nome do Cliente:</label>
+            <input type="text" id="customer_name" name="customer_name" required>
+        </div>
+        <div class="form-group">
+            <label for="customer_cnpj">CNPJ:</label>
+            <input type="text" id="customer_cnpj" name="customer_cnpj" required> {# Add mask/validation later #}
+        </div>
+        <div class="form-group">
+            <label for="delivery_address">Endereço de Entrega:</label>
+            <textarea id="delivery_address" name="delivery_address" rows="3" required></textarea>
+        </div>
+
+        <h4>Produtos</h4>
+        <div class="form-group">
+            <label for="product-search">Buscar Produto:</label>
+            <input type="text" id="product-search" placeholder="Digite para buscar...">
+            <div id="product-search-results"></div>
+        </div>
+
+        <table class="table" id="order-items-table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço Unit. (R$)</th>
+                    <th>Quantidade</th>
+                    <th>Desconto (%)</th>
+                    <th>Subtotal (R$)</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="order-items">
+                <!-- Product lines will be added here by JavaScript -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align: right;"><strong>Total do Pedido:</strong></td>
+                    <td id="order-total">R$ 0,00</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Criar Pedido</button>
+        <a href="{{ url_for('orders.list_orders') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{# Hidden template for new order item row #}
+<template id="order-item-template">
+    <tr>
+        <td>
+            <input type="hidden" name="product_id[]" class="product-id">
+            <span class="product-name"></span>
+        </td>
+        <td class="product-price"></td>
+        <td>
+            <input type="number" name="quantity[]" class="form-control quantity" value="1" min="1" required>
+        </td>
+        <td>
+            <input type="number" name="discount[]" class="form-control discount" value="0" min="0" max="100" step="0.1">
+        </td>
+        <td class="subtotal"></td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger remove-item">Remover</button>
+        </td>
+    </tr>
+</template>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener(\'DOMContentLoaded\", function() {
+        const searchInput = document.getElementById(\'product-search\');
+        const searchResults = document.getElementById(\'product-search-results\');
+        const orderItemsTableBody = document.getElementById(\'order-items\');
+        const orderTotalElement = document.getElementById(\'order-total\');
+        const itemTemplate = document.getElementById(\'order-item-template\');
+        let searchTimeout;
+
+        // --- Product Search --- 
+        searchInput.addEventListener(\'input\', function() {
+            clearTimeout(searchTimeout);
+            const query = searchInput.value.trim();
+            if (query.length < 2) {
+                searchResults.innerHTML = \'\';
+                searchResults.style.display = \'none\';
+                return;
+            }
+            searchTimeout = setTimeout(() => {
+                fetch(`{{ url_for('orders.search_products') }}?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = \'\';
+                        if (data.length > 0) {
+                            const ul = document.createElement(\'ul\');
+                            data.forEach(product => {
+                                const li = document.createElement(\'li\');
+                                li.textContent = `${product.name} - R$ ${product.price.toFixed(2).replace(\".\", \",\")}`;
+                                li.dataset.productId = product.id;
+                                li.dataset.productName = product.name;
+                                li.dataset.productPrice = product.price;
+                                li.style.cursor = \'pointer\';
+                                li.addEventListener(\'click\', () => addProductToOrder(product));
+                                ul.appendChild(li);
+                            });
+                            searchResults.appendChild(ul);
+                            searchResults.style.display = \'block\';
+                        } else {
+                            searchResults.innerHTML = \'<p>Nenhum produto encontrado.</p>\';
+                            searchResults.style.display = \'block\';
+                        }
+                    })
+                    .catch(error => console.error(\'Error searching products:\', error));
+            }, 300); // Debounce search
+        });
+
+        // Hide search results when clicking outside
+        document.addEventListener(\'click\', function(event) {
+            if (!searchResults.contains(event.target) && event.target !== searchInput) {
+                searchResults.style.display = \'none\';
+            }
+        });
+
+        // --- Add Product to Order Table --- 
+        function addProductToOrder(product) {
+            // Check if product already in table
+            const existingRow = orderItemsTableBody.querySelector(`input.product-id[value=\'${product.id}\']`);
+            if (existingRow) {
+                // Optionally increase quantity or just alert
+                alert(\'Produto já adicionado ao pedido.\');
+                searchInput.value = \'\';
+                searchResults.innerHTML = \'\';
+                searchResults.style.display = \'none\';
+                return;
+            }
+
+            const templateContent = itemTemplate.content.cloneNode(true);
+            const newRow = templateContent.querySelector(\'tr\');
+
+            newRow.querySelector(\'input.product-id\').value = product.id;
+            newRow.querySelector(\'span.product-name\').textContent = product.name;
+            newRow.querySelector(\'td.product-price\').textContent = product.price.toFixed(2).replace(\".\", \",\");
+            newRow.querySelector(\'td.product-price\').dataset.price = product.price; // Store raw price
+
+            // Add event listeners for quantity/discount changes and removal
+            newRow.querySelector(\'input.quantity\').addEventListener(\'input\', updateTotals);
+            newRow.querySelector(\'input.discount\').addEventListener(\'input\', updateTotals);
+            newRow.querySelector(\'button.remove-item\').addEventListener(\'click\', function() {
+                this.closest(\'tr\').remove();
+                updateTotals();
+            });
+
+            orderItemsTableBody.appendChild(newRow);
+            updateTotals(); // Initial calculation for the new row
+
+            // Clear search
+            searchInput.value = \'\';
+            searchResults.innerHTML = \'\';
+            searchResults.style.display = \'none\';
+        }
+
+        // --- Update Totals --- 
+        function updateTotals() {
+            let totalOrderValue = 0;
+            orderItemsTableBody.querySelectorAll(\'tr\').forEach(row => {
+                const price = parseFloat(row.querySelector(\'td.product-price\').dataset.price);
+                const quantity = parseInt(row.querySelector(\'input.quantity\').value) || 0;
+                const discount = parseFloat(row.querySelector(\'input.discount\').value) || 0;
+                
+                if (isNaN(price) || isNaN(quantity)) {
+                    row.querySelector(\'td.subtotal\').textContent = \'R$ 0,00\';
+                    return; 
+                }
+
+                const subtotalBeforeDiscount = price * quantity;
+                const discountAmount = subtotalBeforeDiscount * (discount / 100.0);
+                const finalSubtotal = subtotalBeforeDiscount - discountAmount;
+                
+                row.querySelector(\'td.subtotal\').textContent = `R$ ${finalSubtotal.toFixed(2).replace(\".\", \",\")}`;
+                totalOrderValue += finalSubtotal;
+            });
+
+            orderTotalElement.textContent = `R$ ${totalOrderValue.toFixed(2).replace(\".\", \",\")}`;
+        }
+
+        // Initial calculation in case the page reloads with items (e.g., validation error)
+        updateTotals();
+    });
+</script>
+{% endblock %}
+

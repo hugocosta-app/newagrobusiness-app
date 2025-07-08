@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2>Bem-vindo ao Dashboard, {{ current_user.username }}!</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Pedidos</h5>
+                    <p class="card-text">Gerencie seus pedidos de vendas.</p>
+                    <a href="{{ url_for('orders.list_orders') }}" class="btn btn-primary">Ver Pedidos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Despesas</h5>
+                    <p class="card-text">Registre e acompanhe suas despesas.</p>
+                    <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-primary">Ver Despesas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Visitas</h5>
+                    <p class="card-text">Registre suas visitas a clientes.</p>
+                    <a href="{{ url_for('visits.list_visits') }}" class="btn btn-primary">Ver Visitas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Agenda</h5>
+                    <p class="card-text">Gerencie seus compromissos.</p>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('agenda.view_agenda') }}" class="btn btn-primary">Ver Agenda da Equipe</a>
+                    {% else %}
+                        <a href="{{ url_for('agenda.view_agenda') }}" class="btn btn-primary">Ver Minha Agenda</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% if current_user.is_admin %}
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Produtos</h5>
+                    <p class="card-text">Gerencie o catálogo de produtos.</p>
+                    <a href="{{ url_for('products.list_products') }}" class="btn btn-primary">Gerenciar Produtos</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
