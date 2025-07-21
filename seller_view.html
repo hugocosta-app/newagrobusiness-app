@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Minha Agenda - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="agenda-seller-container">
+    <h2>Minha Agenda Semanal</h2>
+    <a href="{{ url_for("agenda.add_agenda_entry") }}" class="btn btn-primary mb-3">Adicionar Novo Compromisso</a>
+
+    <div class="week-navigation mb-3">
+        <a href="{{ url_for("agenda.view_agenda", date=prev_week_start.strftime("%Y-%m-%d")) }}" class="btn btn-secondary">&lt; Semana Anterior</a>
+        <span>Semana de {{ week_start.strftime("%d/%m/%Y") }} a {{ week_end.strftime("%d/%m/%Y") }}</span>
+        <a href="{{ url_for("agenda.view_agenda", date=next_week_start.strftime("%Y-%m-%d")) }}" class="btn btn-secondary">Próxima Semana &gt;</a>
+    </div>
+
+    {% if agenda_entries %}
+        {% for date, entries in agenda_entries.items() %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>{{ date.strftime("%d/%m/%Y - %A") }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for entry in entries %}
+                        <li class="list-group-item">
+                            <strong>Local:</strong> {{ entry.location }}<br>
+                            <strong>Atividade:</strong> {{ entry.activity }}<br>
+                            <a href="{{ url_for("agenda.edit_agenda_entry", entry_id=entry.id) }}" class="btn btn-warning btn-sm mt-2">Editar</a>
+                            <form action="{{ url_for("agenda.delete_agenda_entry", entry_id=entry.id) }}" method="POST" style="display:inline;" onsubmit="return confirm("Tem certeza que deseja excluir este compromisso?");">
+                                <button type="submit" class="btn btn-danger btn-sm mt-2">Excluir</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Nenhum compromisso agendado para esta semana.</p>
+    {% endif %}
+</div>
+{% endblock %}

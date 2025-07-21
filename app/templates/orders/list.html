@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ title }}</h2>
+    <a href="{{ url_for('orders.create_order') }}" class="btn btn-success">Novo Pedido</a>
+</div>
+
+{% if orders.items %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>CNPJ</th>
+                        <th>Data</th>
+                        <th>Valor Total</th>
+                        <th>Status</th>
+                        {% if current_user.is_admin %}
+                        <th>Vendedor</th>
+                        {% endif %}
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders.items %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.customer_name }}</td>
+                        <td>{{ order.customer_cnpj }}</td>
+                        <td>{{ order.order_date.strftime('%d/%m/%Y') }}</td>
+                        <td>R$ {{ "%.2f"|format(order.total_amount) }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ order.status }}</span>
+                        </td>
+                        {% if current_user.is_admin %}
+                        <td>{{ order.seller.username }}</td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ url_for('orders.view_order', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                            <a href="{{ url_for('orders.generate_txt_report', order_id=order.id) }}" class="btn btn-sm btn-outline-success">TXT</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if orders.pages > 1 %}
+<nav aria-label="Navegação de páginas" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if orders.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('orders.list_orders', page=orders.prev_num) }}">Anterior</a>
+            </li>
+        {% endif %}
+        
+        {% for page_num in orders.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != orders.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('orders.list_orders', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if orders.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('orders.list_orders', page=orders.next_num) }}">Próximo</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="card-body text-center">
+        <h5>Nenhum pedido encontrado</h5>
+        <p class="text-muted">Você ainda não criou nenhum pedido.</p>
+        <a href="{{ url_for('orders.create_order') }}" class="btn btn-success">Criar Primeiro Pedido</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

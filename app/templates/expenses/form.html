@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Data *</label>
+                                <input type="date" class="form-control" id="date" name="date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="expense_type" class="form-label">Tipo de Despesa *</label>
+                                <select class="form-select" id="expense_type" name="expense_type" required>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Combustível">Combustível</option>
+                                    <option value="Pedágio">Pedágio</option>
+                                    <option value="Refeições">Refeições</option>
+                                    <option value="Hotel">Hotel</option>
+                                    <option value="Diversos">Diversos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Valor (R$) *</label>
+                                <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descrição</label>
+                                <input type="text" class="form-control" id="description" name="description" placeholder="Descrição opcional">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="city" class="form-label">Cidade *</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="state" class="form-label">Estado (UF) *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="">UF</option>
+                                    <option value="AC">AC</option>
+                                    <option value="AL">AL</option>
+                                    <option value="AP">AP</option>
+                                    <option value="AM">AM</option>
+                                    <option value="BA">BA</option>
+                                    <option value="CE">CE</option>
+                                    <option value="DF">DF</option>
+                                    <option value="ES">ES</option>
+                                    <option value="GO">GO</option>
+                                    <option value="MA">MA</option>
+                                    <option value="MT">MT</option>
+                                    <option value="MS">MS</option>
+                                    <option value="MG">MG</option>
+                                    <option value="PA">PA</option>
+                                    <option value="PB">PB</option>
+                                    <option value="PR">PR</option>
+                                    <option value="PE">PE</option>
+                                    <option value="PI">PI</option>
+                                    <option value="RJ">RJ</option>
+                                    <option value="RN">RN</option>
+                                    <option value="RS">RS</option>
+                                    <option value="RO">RO</option>
+                                    <option value="RR">RR</option>
+                                    <option value="SC">SC</option>
+                                    <option value="SP">SP</option>
+                                    <option value="SE">SE</option>
+                                    <option value="TO">TO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção de KM (apenas para combustível) -->
+                    <div id="km-section" style="display: none;">
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-success">Controle de Quilometragem</h6>
+                                <hr>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="km_initial" class="form-label">KM Inicial</label>
+                                    <input type="number" class="form-control" id="km_initial" name="km_initial" step="0.1" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="km_final" class="form-label">KM Final</label>
+                                    <input type="number" class="form-control" id="km_final" name="km_final" step="0.1" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="km_total" class="form-label">KM Total</label>
+                                    <input type="text" class="form-control" id="km_total" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Registrar Despesa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const expenseTypeSelect = document.getElementById('expense_type');
+    const kmSection = document.getElementById('km-section');
+    const kmInitialInput = document.getElementById('km_initial');
+    const kmFinalInput = document.getElementById('km_final');
+    const kmTotalInput = document.getElementById('km_total');
+
+    // Show/hide KM section based on expense type
+    expenseTypeSelect.addEventListener('change', function() {
+        if (this.value === 'Combustível') {
+            kmSection.style.display = 'block';
+        } else {
+            kmSection.style.display = 'none';
+            kmInitialInput.value = '';
+            kmFinalInput.value = '';
+            kmTotalInput.value = '';
+        }
+    });
+
+    // Calculate KM total
+    function calculateKmTotal() {
+        const initial = parseFloat(kmInitialInput.value) || 0;
+        const final = parseFloat(kmFinalInput.value) || 0;
+        
+        if (initial > 0 && final > 0 && final >= initial) {
+            const total = final - initial;
+            kmTotalInput.value = total.toFixed(1) + ' km';
+        } else {
+            kmTotalInput.value = '';
+        }
+    }
+
+    kmInitialInput.addEventListener('input', calculateKmTotal);
+    kmFinalInput.addEventListener('input', calculateKmTotal);
+
+    // Set today's date as default
+    document.getElementById('date').valueAsDate = new Date();
+});
+</script>
+{% endblock %}
+

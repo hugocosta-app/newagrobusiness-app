@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: newagrobusiness-app
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    envVars:
+      - key: FLASK_APP
+        value: run.py
+      - key: FLASK_ENV
+        value: production
+    buildCommand: |
+      pip install -r requirements.txt
+      python -m flask cli init-db
+

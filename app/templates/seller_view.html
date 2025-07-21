@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Bem-vindo, {{ current_user.nickname or current_user.username }}!</h2>
+            <p class="text-muted">Aqui você pode acompanhar seus pedidos, despesas, visitas e agenda.</p>
+        </div>
+    </div>
+
+    <!-- Estatísticas do Vendedor -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ my_orders }}</h5>
+                    <p class="card-text">Meus Pedidos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ my_expenses }}</h5>
+                    <p class="card-text">Minhas Despesas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ my_visits }}</h5>
+                    <p class="card-text">Minhas Visitas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ upcoming_agenda|length }}</h5>
+                    <p class="card-text">Próximos Compromissos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Novo Pedido</h5>
+                    <p class="card-text">Criar um novo pedido de venda.</p>
+                    <a href="{{ url_for('orders.create_order') }}" class="btn btn-primary">Criar Pedido</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Nova Despesa</h5>
+                    <p class="card-text">Registrar uma nova despesa.</p>
+                    <a href="{{ url_for('expenses.create_expense') }}" class="btn btn-warning">Registrar Despesa</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Nova Visita</h5>
+                    <p class="card-text">Registrar uma visita a cliente.</p>
+                    <a href="{{ url_for('visits.create_visit') }}" class="btn btn-info">Registrar Visita</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Novo Compromisso</h5>
+                    <p class="card-text">Agendar um compromisso.</p>
+                    <a href="{{ url_for('agenda.create_entry') }}" class="btn btn-success">Agendar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedidos Recentes -->
+    {% if recent_orders %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>Meus Pedidos Recentes</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.customer_name }}</td>
+                            <td>{{ order.order_date.strftime('%d/%m/%Y') }}</td>
+                            <td>R$ {{ "%.2f"|format(order.total_amount) }}</td>
+                            <td><span class="badge bg-secondary">{{ order.status }}</span></td>
+                            <td>
+                                <a href="{{ url_for('orders.view_order', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('orders.list_orders') }}" class="btn btn-outline-primary">Ver Todos os Pedidos</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Despesas Recentes -->
+    {% if recent_expenses %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>Minhas Despesas Recentes</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Local</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in recent_expenses %}
+                        <tr>
+                            <td>{{ expense.date.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ expense.expense_type }}</td>
+                            <td>R$ {{ "%.2f"|format(expense.amount) }}</td>
+                            <td>{{ expense.city }}/{{ expense.state }}</td>
+                            <td>
+                                <a href="{{ url_for('expenses.view_expense', expense_id=expense.id) }}" class="btn btn-sm btn-outline-warning">Ver</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-outline-warning">Ver Todas as Despesas</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Próximos Compromissos -->
+    {% if upcoming_agenda %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>Próximos Compromissos</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Local</th>
+                            <th>Descrição</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in upcoming_agenda %}
+                        <tr>
+                            <td>{{ entry.date.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ entry.time.strftime('%H:%M') if entry.time else '-' }}</td>
+                            <td>{{ entry.location }}</td>
+                            <td>{{ entry.description[:50] }}{% if entry.description|length > 50 %}...{% endif %}</td>
+                            <td><span class="badge bg-info">{{ entry.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('agenda.view_agenda') }}" class="btn btn-outline-success">Ver Agenda Completa</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

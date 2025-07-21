@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ title }}</h2>
+    <div>
+        <a href="{{ url_for('expenses.generate_txt_report') }}" class="btn btn-outline-success">Relatório TXT</a>
+        <a href="{{ url_for('expenses.create_expense') }}" class="btn btn-success">Nova Despesa</a>
+    </div>
+</div>
+
+{% if expenses.items %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Local</th>
+                        <th>KM Total</th>
+                        {% if current_user.is_admin %}
+                        <th>Vendedor</th>
+                        {% endif %}
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses.items %}
+                    <tr>
+                        <td>{{ expense.date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <span class="badge bg-info">{{ expense.expense_type }}</span>
+                        </td>
+                        <td>R$ {{ "%.2f"|format(expense.amount) }}</td>
+                        <td>{{ expense.city }}/{{ expense.state }}</td>
+                        <td>
+                            {% if expense.km_total %}
+                                {{ "%.2f"|format(expense.km_total) }} km
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% if current_user.is_admin %}
+                        <td>{{ expense.seller.username }}</td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ url_for('expenses.view_expense', expense_id=expense.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-warning">
+                        <th colspan="{% if current_user.is_admin %}5{% else %}4{% endif %}">Total:</th>
+                        <th>R$ {{ "%.2f"|format(expenses.items|sum(attribute='amount')) }}</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if expenses.pages > 1 %}
+<nav aria-label="Navegação de páginas" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if expenses.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('expenses.list_expenses', page=expenses.prev_num) }}">Anterior</a>
+            </li>
+        {% endif %}
+        
+        {% for page_num in expenses.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != expenses.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('expenses.list_expenses', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if expenses.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('expenses.list_expenses', page=expenses.next_num) }}">Próximo</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="card-body text-center">
+        <h5>Nenhuma despesa encontrada</h5>
+        <p class="text-muted">Você ainda não registrou nenhuma despesa.</p>
+        <a href="{{ url_for('expenses.create_expense') }}" class="btn btn-success">Registrar Primeira Despesa</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

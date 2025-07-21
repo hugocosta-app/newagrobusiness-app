@@ -1,0 +1,174 @@
+/* New Agro Business - Cores baseadas no logo */
+:root {
+    --primary-green: #2E7D32;
+    --secondary-green: #4CAF50;
+    --accent-yellow: #FFC107;
+    --light-green: #E8F5E8;
+    --dark-green: #1B5E20;
+    --text-dark: #2C2C2C;
+    --text-light: #666666;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: var(--text-dark);
+}
+
+/* Navbar customizations */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.bg-success {
+    background-color: var(--primary-green) !important;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: var(--light-green);
+    border-bottom: 2px solid var(--secondary-green);
+    font-weight: bold;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-green);
+    border-color: var(--dark-green);
+}
+
+.btn-success {
+    background-color: var(--secondary-green);
+    border-color: var(--secondary-green);
+}
+
+.btn-success:hover {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-warning {
+    background-color: var(--accent-yellow);
+    border-color: var(--accent-yellow);
+    color: var(--text-dark);
+}
+
+/* Dashboard specific styles */
+.dashboard-container {
+    padding: 20px 0;
+}
+
+.dashboard-container .card {
+    margin-bottom: 20px;
+}
+
+/* Statistics cards */
+.bg-primary {
+    background-color: var(--primary-green) !important;
+}
+
+.bg-warning {
+    background-color: var(--accent-yellow) !important;
+    color: var(--text-dark) !important;
+}
+
+.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+/* Tables */
+.table {
+    background-color: white;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+    background-color: var(--light-green);
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--secondary-green);
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+/* Badges */
+.badge {
+    font-size: 0.8em;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    background-color: var(--light-green) !important;
+    border-top: 2px solid var(--secondary-green);
+}
+
+/* Login page */
+.card-header img {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-container .col-md-3,
+    .dashboard-container .col-md-4 {
+        margin-bottom: 15px;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Custom alert styles */
+.alert-success {
+    background-color: var(--light-green);
+    border-color: var(--secondary-green);
+    color: var(--dark-green);
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Loading states */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+

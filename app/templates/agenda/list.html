@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ title }}</h2>
+    <a href="{{ url_for('agenda.create_entry') }}" class="btn btn-success">Novo Compromisso</a>
+</div>
+
+{% if agenda_entries.items %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th>Local</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                        {% if current_user.is_admin %}
+                        <th>Vendedor</th>
+                        {% endif %}
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in agenda_entries.items %}
+                    <tr>
+                        <td>{{ entry.date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if entry.time %}
+                                {{ entry.time.strftime('%H:%M') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ entry.location }}</td>
+                        <td>{{ entry.description[:50] }}{% if entry.description|length > 50 %}...{% endif %}</td>
+                        <td>
+                            {% if entry.status == 'Agendado' %}
+                                <span class="badge bg-info">{{ entry.status }}</span>
+                            {% elif entry.status == 'Concluído' %}
+                                <span class="badge bg-success">{{ entry.status }}</span>
+                            {% elif entry.status == 'Cancelado' %}
+                                <span class="badge bg-danger">{{ entry.status }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ entry.status }}</span>
+                            {% endif %}
+                        </td>
+                        {% if current_user.is_admin %}
+                        <td>{{ entry.seller.username }}</td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ url_for('agenda.view_entry', entry_id=entry.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if agenda_entries.pages > 1 %}
+<nav aria-label="Navegação de páginas" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if agenda_entries.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('agenda.view_agenda', page=agenda_entries.prev_num) }}">Anterior</a>
+            </li>
+        {% endif %}
+        
+        {% for page_num in agenda_entries.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != agenda_entries.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('agenda.view_agenda', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if agenda_entries.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('agenda.view_agenda', page=agenda_entries.next_num) }}">Próximo</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="card-body text-center">
+        <h5>Nenhum compromisso encontrado</h5>
+        <p class="text-muted">{% if current_user.is_admin %}A equipe ainda não tem compromissos agendados.{% else %}Você ainda não tem compromissos agendados.{% endif %}</p>
+        <a href="{{ url_for('agenda.create_entry') }}" class="btn btn-success">Agendar Primeiro Compromisso</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

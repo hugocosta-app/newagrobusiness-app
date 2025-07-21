@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ title }}</h2>
+    <a href="{{ url_for('visits.create_visit') }}" class="btn btn-success">Nova Visita</a>
+</div>
+
+{% if visits.items %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Cliente</th>
+                        <th>Local</th>
+                        <th>Resumo</th>
+                        {% if current_user.is_admin %}
+                        <th>Vendedor</th>
+                        {% endif %}
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits.items %}
+                    <tr>
+                        <td>{{ visit.date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ visit.customer_name }}</td>
+                        <td>{{ visit.city }}/{{ visit.state }}</td>
+                        <td>{{ visit.summary[:50] }}{% if visit.summary|length > 50 %}...{% endif %}</td>
+                        {% if current_user.is_admin %}
+                        <td>{{ visit.seller.username }}</td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ url_for('visits.view_visit', visit_id=visit.id) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if visits.pages > 1 %}
+<nav aria-label="Navegação de páginas" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if visits.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('visits.list_visits', page=visits.prev_num) }}">Anterior</a>
+            </li>
+        {% endif %}
+        
+        {% for page_num in visits.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != visits.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('visits.list_visits', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if visits.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('visits.list_visits', page=visits.next_num) }}">Próximo</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="card-body text-center">
+        <h5>Nenhuma visita encontrada</h5>
+        <p class="text-muted">Você ainda não registrou nenhuma visita.</p>
+        <a href="{{ url_for('visits.create_visit') }}" class="btn btn-success">Registrar Primeira Visita</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

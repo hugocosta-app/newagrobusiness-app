@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="visit-form-container">
+    <h2>{{ title }}</h2>
+    <form method="POST" action="{{ action_url }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="client_name">Nome do Cliente:</label>
+            <input type="text" id="client_name" name="client_name" class="form-control" value="{{ visit.client_name if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="visit_date">Data da Visita:</label>
+            <input type="date" id="visit_date" name="visit_date" class="form-control" value="{{ visit.visit_date.strftime('%Y-%m-%d') if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="city">Cidade:</label>
+            <input type="text" id="city" name="city" class="form-control" value="{{ visit.city if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="state">Estado (UF):</label>
+            <input type="text" id="state" name="state" class="form-control" maxlength="2" value="{{ visit.state if visit else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="products_discussed">Produtos Discutidos (separados por vírgula):</label>
+            <input type="text" id="products_discussed" name="products_discussed" class="form-control" value="{{ visit.products_discussed if visit else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="summary">Resumo da Visita:</label>
+            <textarea id="summary" name="summary" class="form-control" rows="3" required>{{ visit.summary if visit else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="highlights">Destaques da Visita:</label>
+            <textarea id="highlights" name="highlights" class="form-control" rows="3">{{ visit.highlights if visit else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="observations">Observações:</label>
+            <textarea id="observations" name="observations" class="form-control" rows="3">{{ visit.observations if visit else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="visit_photos">Fotos da Visita (múltiplas):</label>
+            <input type="file" id="visit_photos" name="visit_photos" class="form-control-file" accept="image/*" multiple>
+            {% if visit and visit.photos %}
+                <p>Fotos atuais:</p>
+                <div class="current-photos">
+                    {% for photo_url in visit.photos.split(',') %}
+                        <img src="{{ photo_url.strip() }}" alt="Foto da Visita" style="max-width: 100px; margin-right: 10px;">
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Visita</button>
+        <a href="{{ url_for('visits.list_visits') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

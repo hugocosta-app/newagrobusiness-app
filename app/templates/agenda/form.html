@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Data *</label>
+                                <input type="date" class="form-control" id="date" name="date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="time" class="form-label">Horário</label>
+                                <input type="time" class="form-control" id="time" name="time">
+                                <div class="form-text">Opcional - deixe em branco se for o dia todo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Local *</label>
+                        <input type="text" class="form-control" id="location" name="location" required placeholder="Ex: Escritório do cliente, Fazenda São José, etc.">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descrição *</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required placeholder="Descreva o compromisso, objetivo da visita, reunião, etc."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="Agendado" selected>Agendado</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Concluído">Concluído</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <option value="Reagendado">Reagendado</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('agenda.view_agenda') }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Agendar Compromisso</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set today's date as default
+    document.getElementById('date').valueAsDate = new Date();
+});
+</script>
+{% endblock %}
+

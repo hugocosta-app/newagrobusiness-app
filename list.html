@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="order-list-container">
+    <h2>{{ title }}</h2>
+
+    {% if current_user.is_admin %}
+        {# Filtros para Admin (opcional) #}
+        <form method="GET" action="{{ url_for("orders.list_orders") }}" class="mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="seller_id">Filtrar por Vendedor:</label>
+                    <select name="seller_id" id="seller_id" class="form-select">
+                        <option value="">Todos</option>
+                        {% for seller in sellers %}
+                            <option value="{{ seller.id }}" {% if request.args.get("seller_id") == seller.id|string %}selected{% endif %}>{{ seller.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="start_date">Data Inicial:</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request.args.get("start_date", "") }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="end_date">Data Final:</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request.args.get("end_date", "") }}">
+                </div>
+                <div class="col-md-2 align-self-end">
+                    <button type="submit" class="btn btn-info">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+    {% if orders %}
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID Pedido</th>
+                <th>Data</th>
+                <th>Cliente</th>
+                {% if current_user.is_admin %}<th>Vendedor</th>{% endif %}
+                <th>Total (R$)</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.order_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ order.client_name }}</td>
+                {% if current_user.is_admin %}<td>{{ order.seller.username }}</td>{% endif %}
+                <td>{{ "%.2f"|format(order.total_amount) }}</td>
+                <td>
+                    <a href="{{ url_for("orders.view_order", order_id=order.id) }}" class="btn btn-info btn-sm">Ver</a>
+                    <form action="{{ url_for("orders.delete_order", order_id=order.id) }}" method="POST" style="display:inline;" onsubmit="return confirm("Tem certeza que deseja excluir este pedido?");">
+                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum pedido registrado ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

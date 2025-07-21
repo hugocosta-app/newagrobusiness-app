@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ title }}</h2>
+    <div>
+        <a href="{{ url_for('orders.generate_txt_report', order_id=order.id) }}" class="btn btn-success">Baixar TXT</a>
+        <a href="{{ url_for('orders.list_orders') }}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Dados do Pedido -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Informações do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>ID do Pedido:</strong> #{{ order.id }}</p>
+                        <p><strong>Data:</strong> {{ order.order_date.strftime('%d/%m/%Y às %H:%M') }}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-secondary">{{ order.status }}</span></p>
+                        {% if current_user.is_admin %}
+                        <p><strong>Vendedor:</strong> {{ order.seller.username }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Cliente:</strong> {{ order.customer_name }}</p>
+                        <p><strong>CNPJ:</strong> {{ order.customer_cnpj }}</p>
+                        <p><strong>Valor Total:</strong> <span class="text-success fw-bold">R$ {{ "%.2f"|format(order.total_amount) }}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Endereço de Entrega -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Endereço de Entrega</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ order.delivery_address|replace('\n', '<br>')|safe }}</p>
+            </div>
+        </div>
+
+        <!-- Itens do Pedido -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Itens do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço Unit.</th>
+                                <th>Qtd</th>
+                                <th>Desconto</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            {% set subtotal = item.price_at_order * item.quantity %}
+                            {% set discount_amount = subtotal * (item.discount_applied / 100.0) %}
+                            {% set final_subtotal = subtotal - discount_amount %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>R$ {{ "%.2f"|format(item.price_at_order) }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ "%.1f"|format(item.discount_applied) }}%</td>
+                                <td>R$ {{ "%.2f"|format(final_subtotal) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-success">
+                                <th colspan="4">Total do Pedido</th>
+                                <th>R$ {{ "%.2f"|format(order.total_amount) }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Ações -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Ações</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('orders.generate_txt_report', order_id=order.id) }}" class="btn btn-success">
+                        📄 Baixar Relatório TXT
+                    </a>
+                    <a href="{{ url_for('orders.list_orders') }}" class="btn btn-outline-primary">
+                        📋 Ver Todos os Pedidos
+                    </a>
+                    <a href="{{ url_for('orders.create_order') }}" class="btn btn-outline-success">
+                        ➕ Novo Pedido
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Resumo</h5>
+            </div>
+            <div class="card-body">
+                <p><small class="text-muted">Total de Itens:</small><br>
+                   <strong>{{ order.items|length }} produto(s)</strong></p>
+                
+                <p><small class="text-muted">Quantidade Total:</small><br>
+                   <strong>{{ order.items|sum(attribute='quantity') }} unidade(s)</strong></p>
+                
+                <p><small class="text-muted">Criado em:</small><br>
+                   <strong>{{ order.order_date.strftime('%d/%m/%Y às %H:%M') }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

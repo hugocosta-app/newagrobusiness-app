@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Agenda da Equipe - New Agrobusiness{% endblock %}
+
+{% block content %}
+<div class="agenda-admin-container">
+    <h2>Agenda da Equipe</h2>
+
+    <form method="GET" action="{{ url_for("agenda.view_agenda") }}" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="seller_id">Filtrar por Vendedor:</label>
+                <select name="seller_id" id="seller_id" class="form-select">
+                    <option value="">Todos</option>
+                    {% for seller in sellers %}
+                        <option value="{{ seller.id }}" {% if request.args.get("seller_id") == seller.id|string %}selected{% endif %}>{{ seller.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="date">Filtrar por Data:</label>
+                <input type="date" name="date" id="date" class="form-control" value="{{ selected_date.strftime('%Y-%m-%d') if selected_date else '' }}">
+            </div>
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-info">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    {% if agenda_entries %}
+        {% for date, entries in agenda_entries.items() %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>{{ date.strftime("%d/%m/%Y - %A") }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for entry in entries %}
+                        <li class="list-group-item">
+                            <strong>Vendedor:</strong> {{ entry.user.username }}<br>
+                            <strong>Local:</strong> {{ entry.location }}<br>
+                            <strong>Atividade:</strong> {{ entry.activity }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Nenhum compromisso agendado para os filtros selecionados.</p>
+    {% endif %}
+</div>
+{% endblock %}
